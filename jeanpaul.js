@@ -78,6 +78,6 @@ rtm.on(CLIENT_EVENTS.RTM.RAW_MESSAGE, (event) => {
             }
         }
     }
-}
+});
 
 rtm.start();
