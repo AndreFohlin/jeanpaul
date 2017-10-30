@@ -1,7 +1,7 @@
 var RtmClient = require('@slack/client').RtmClient;
 var CLIENT_EVENTS = require('@slack/client').CLIENT_EVENTS;
  
-var bot_token = 'xoxb-262893484882-jXsRg7AyocUz9TVZbiOCt2Jn' || '';
+var bot_token = 'xoxb-262893484882-rDCA1QX5LchsZOUCwVBjCo9A' || '';
 var myUserKey = '<@U7QS9E8RY>';
 
 var rtm = new RtmClient(bot_token);
