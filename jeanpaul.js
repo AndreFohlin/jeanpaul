@@ -55,7 +55,13 @@ rtm.on(CLIENT_EVENTS.RTM.RAW_MESSAGE, (event) => {
                             // console.log('bitcoinSEK', bitcoinSEK['Realtime Currency Exchange Rate']['5. Exchange Rate']);
                             rtm.sendMessage(`Bitcoin ligger just nu på *${numberParser(parseFloat(bitcoinSEK).toFixed(0))} kr*, eller *$${numberParser(parseFloat(bitcoinUSD).toFixed(2))}* om man är en Amerikatt. Ehm... mjao.`, event.channel);
                         }
+                        else {
+                            rtm.sendMessage('Det gick inte att hämta bitcoin-kurserna... Meow :(');
+                        }
                     });
+                }
+                else {
+                    rtm.sendMessage('Det gick inte att hämta bitcoin-kurserna... Meow :(');
                 }
             });
         }
