@@ -14,6 +14,7 @@ let meows = reactions.getReactions();
 let numberOfMeows = 0;
 let channel;
 let generalChannelId = 'C4RUQDECW'; // ID:t för #general
+let jpUtvecklingChannelId = 'C7RGH9LN5';
 
 let postedFridayFrog = false;
 
@@ -27,7 +28,7 @@ rtm.on(CLIENT_EVENTS.RTM.AUTHENTICATED, (rtmStartData) => {
 
 // you need to wait for the client to fully connect before you can send messages
 rtm.on(CLIENT_EVENTS.RTM.RTM_CONNECTION_OPENED, () => {
-  //rtm.sendMessage("Meow!", channel);
+  rtm.sendMessage('Autodeployed!? Jag har i alla fall startats om. Mjao.', jpUtvecklingChannelId);
   console.log('channel opened', channel);
 });
 
