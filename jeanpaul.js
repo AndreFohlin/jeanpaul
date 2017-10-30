@@ -11,6 +11,7 @@ let myUserKey = 'U7QS9E8RY';
 let rtm = new RtmClient(bot_token);
 
 let meows = reactions.getReactions();
+let numberOfMeows = 0;
 let channel;
 let generalChannelId = 'C4RUQDECW'; // ID:t för #general
 
@@ -48,9 +49,15 @@ rtm.on(CLIENT_EVENTS.RTM.RAW_MESSAGE, (event) => {
 
         // Messa #general ifall någon går online, med ett random mjao
         if (event.presence === 'active' && event.user != myUserKey) {
-            let meow = meows[Math.floor(Math.random()*meows.length)];
-            let msg = meow;
-            rtm.sendMessage(msg, generalChannelId);
+            if (numberOfMeows > 5) {
+                let meow = meows[Math.floor(Math.random()*meows.length)];
+                let msg = meow;
+                rtm.sendMessage(msg, generalChannelId);
+                numberOfMeows = 0;
+            }
+            else {
+                numberOfMeows++;
+            }
         }
     }
 
