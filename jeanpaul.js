@@ -57,17 +57,16 @@ rtm.on(CLIENT_EVENTS.RTM.RAW_MESSAGE, (event) => {
     // En slags ping/pong mellan server och bot. Kommer drygt varje sekund, men kan missas utifall andra event pågår.
     if (event.type === 'pong') {
 
-        // Posta fredagsgrodan, runt typ 8-tiden bara på fredagar
+        // Posta fredagsgrodan, exakt klockan 08:07 på fredagar
         if (!postedFridayFrog) {
-            if (moment().format('dddd') === 'Friday' && moment().format('HH') === '08:07') { 
+            if (moment().format('dddd HH:mm') === 'Friday 08:07') { 
                 rtm.sendMessage('https://i.imgur.com/ORDvwi9.jpg', generalChannelId);
                 postedFridayFrog = true;
             }
         }
         else {
-            // Reset fridayfrog
             if (moment().format('dddd') !== 'Friday') {
-                postedFridayFrog = false;
+                postedFridayFrog = false; // Reset fridayfrog
             }
         }
     }
