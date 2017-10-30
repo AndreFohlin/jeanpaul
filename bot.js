@@ -1,16 +1,20 @@
-var RtmClient = require('@slack/client').RtmClient;
-var CLIENT_EVENTS = require('@slack/client').CLIENT_EVENTS;
+let RtmClient = require('@slack/client').RtmClient;
+let CLIENT_EVENTS = require('@slack/client').CLIENT_EVENTS;
+let moment = require("moment");
 
-var botConfig = require('./config.js');
-var reactions = require('./reactions.js');
+let botConfig = require('./config.js');
+let reactions = require('./reactions.js');
 
-var bot_token = botConfig.getToken() || '';
-var myUserKey = '<@U7QS9E8RY>';
+let bot_token = botConfig.getToken() || '';
+let myUserKey = 'U7QS9E8RY';
 
-var rtm = new RtmClient(bot_token);
+let rtm = new RtmClient(bot_token);
 
-var meows = reactions.getReactions();
+let meows = reactions.getReactions();
 let channel;
+let generalChannelId = 'C4RUQDECW'; // ID:t för #general
+
+let postedFridayFrog = false;
 
 // The client will emit an RTM.AUTHENTICATED event on successful connection, with the `rtm.start` payload
 rtm.on(CLIENT_EVENTS.RTM.AUTHENTICATED, (rtmStartData) => {
@@ -21,19 +25,50 @@ rtm.on(CLIENT_EVENTS.RTM.AUTHENTICATED, (rtmStartData) => {
 });
 
 // you need to wait for the client to fully connect before you can send messages
-rtm.on(CLIENT_EVENTS.RTM.RTM_CONNECTION_OPENED, function () {
+rtm.on(CLIENT_EVENTS.RTM.RTM_CONNECTION_OPENED, () => {
   //rtm.sendMessage("Meow!", channel);
   console.log('channel opened', channel);
 });
 
-rtm.on(CLIENT_EVENTS.RTM.RAW_MESSAGE, function(message) {
-    message = JSON.parse(message);
-    if(message.type === 'message') {
-        if(message.text && message.text.includes(myUserKey)){
-            let targetUser = '<@' +message.user+ '>';
-            var meow = meows[Math.floor(Math.random()*meows.length)];
+rtm.on(CLIENT_EVENTS.RTM.RAW_MESSAGE, (event) => {
+    event = JSON.parse(event);
+
+    // Om ett meddelande skickas, oavsett kanal.
+    if (event.type === 'message') {
+        if (event.text && (event.text.includes(`<@${myUserKey}>`) || event.text.includes(`JP`))) {
+            // let targetUser = '<@' +message.user+ '>';
+            let meow = meows[Math.floor(Math.random()*meows.length)];
             let msg = meow;
-            rtm.sendMessage(msg, message.channel);
+            rtm.sendMessage(msg, event.channel);
+        }
+    }
+
+    // Om "away" eller "active" (online) ändras
+    if (event.type === 'presence_change') {
+
+        // Messa #general ifall någon går online, med ett random mjao
+        if (event.presence === 'active' && event.user != myUserKey) {
+            let meow = meows[Math.floor(Math.random()*meows.length)];
+            let msg = meow;
+            rtm.sendMessage(msg, generalChannelId);
+        }
+    }
+
+    // En slags ping/pong mellan server och bot. Kommer drygt varje sekund, men kan missas utifall andra event pågår.
+    if (event.type === 'pong') {
+
+        // Posta fredagsgrodan, runt typ 8-tiden bara på fredagar
+        if (!postedFridayFrog) {
+            if (moment().format('dddd') === 'Friday' && moment().format('HH') === '08:07') { 
+                rtm.sendMessage('https://i.imgur.com/ORDvwi9.jpg', generalChannelId);
+                postedFridayFrog = true;
+            }
+        }
+        else {
+            // Reset fridayfrog
+            if (moment().format('dddd') !== 'Friday') {
+                postedFridayFrog = false;
+            }
         }
     }
 });
