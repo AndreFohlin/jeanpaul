@@ -5,14 +5,17 @@ exports.getReactions = function() {
 		'..............', 
 		'Mjawwarw', 
 		'Rrrrrrrrrrrr', 
-		'*Attacks random body part*', 
+		'* Attacks random body part *', 
 		':jpa:', 
 		':scream_cat:', 
 		':doge::gun:', 
 		':cat:', 
 		':cat2:', 
 		':kan:',
-		':mjao?'
+        'mjao?',
+        'MJAO!',
+        'Mjaoooo :heart_eyes_cat:',
+        ':pouting_cat: :fish:'
 	];
 };
 
