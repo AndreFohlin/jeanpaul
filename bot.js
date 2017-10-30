@@ -7,7 +7,7 @@ var myUserKey = '<@U7QS9E8RY>';
 
 var rtm = new RtmClient(bot_token);
 
-var meows = ['Meow', 'Mjaeowo', '..............', 'Mjawwarw', 'Rrrrrrrrrrrr'];
+var meows = ['Meow', 'Mjaeowo', '..............', 'Mjawwarw', 'Rrrrrrrrrrrr', '*Attacks random body part*'];
 let channel;
 
 // The client will emit an RTM.AUTHENTICATED event on successful connection, with the `rtm.start` payload
