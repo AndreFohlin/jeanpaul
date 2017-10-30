@@ -11,7 +11,8 @@ exports.getReactions = function() {
 		':doge::gun:', 
 		':cat:', 
 		':cat2:', 
-		':kan:'
+		':kan:',
+		':mjao?'
 	];
 };
 
