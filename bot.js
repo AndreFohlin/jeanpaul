@@ -1,13 +1,15 @@
 var RtmClient = require('@slack/client').RtmClient;
 var CLIENT_EVENTS = require('@slack/client').CLIENT_EVENTS;
+
 var botConfig = require('./config.js');
+var reactions = require('./reactions.js');
 
 var bot_token = botConfig.getToken() || '';
 var myUserKey = '<@U7QS9E8RY>';
 
 var rtm = new RtmClient(bot_token);
 
-var meows = ['Meow', 'Mjaeowo', '..............', 'Mjawwarw', 'Rrrrrrrrrrrr', '*Attacks random body part*', ':jpa:', ':scream_cat:', ':doge::gun:', ':cat:', ':cat2:', ':kan:'];
+var meows = reactions.getReactions();
 let channel;
 
 // The client will emit an RTM.AUTHENTICATED event on successful connection, with the `rtm.start` payload
@@ -30,7 +32,7 @@ rtm.on(CLIENT_EVENTS.RTM.RAW_MESSAGE, function(message) {
         if(message.text && message.text.includes(myUserKey)){
             let targetUser = '<@' +message.user+ '>';
             var meow = meows[Math.floor(Math.random()*meows.length)];
-            let msg = meow+' '+targetUser;
+            let msg = meow;
             rtm.sendMessage(msg, message.channel);
         }
     }
