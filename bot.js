@@ -36,6 +36,4 @@ rtm.on(CLIENT_EVENTS.RTM.RAW_MESSAGE, function(message) {
     }
 });
 
-rtm.on(CLIENT_EVENTS.RTM.
-
 rtm.start();
