@@ -1,6 +1,7 @@
 let RtmClient = require('@slack/client').RtmClient;
 let CLIENT_EVENTS = require('@slack/client').CLIENT_EVENTS;
-let moment = require("moment");
+let moment = require('moment');
+let request = require('request');
 
 let botConfig = require('./config.js');
 let reactions = require('./reactions.js');
@@ -28,7 +29,7 @@ rtm.on(CLIENT_EVENTS.RTM.AUTHENTICATED, (rtmStartData) => {
 
 // you need to wait for the client to fully connect before you can send messages
 rtm.on(CLIENT_EVENTS.RTM.RTM_CONNECTION_OPENED, () => {
-  rtm.sendMessage('Autodeployed! Eller, jag har i alla fall startats om. Mjao.', jpUtvecklingChannelId);
+//   rtm.sendMessage('Autodeployed! Eller, jag har i alla fall startats om. Mjao.', jpUtvecklingChannelId);
   console.log('channel opened', channel);
 });
 
@@ -42,6 +43,21 @@ rtm.on(CLIENT_EVENTS.RTM.RAW_MESSAGE, (event) => {
             let meow = meows[Math.floor(Math.random()*meows.length)];
             let msg = meow;
             rtm.sendMessage(msg, event.channel);
+        }
+        else if (event.text.includes('bitcoin')) {
+            request('https://www.alphavantage.co/query?function=CURRENCY_EXCHANGE_RATE&from_currency=BTC&to_currency=SEK&apikey=ZBFWZJJKL5WA9XD0', (error, response, sekBody) => {
+                if (response.statusCode === 200) {
+                    let bitcoinSEK = JSON.parse(sekBody)['Realtime Currency Exchange Rate']['5. Exchange Rate'];
+                    
+                    request('https://www.alphavantage.co/query?function=CURRENCY_EXCHANGE_RATE&from_currency=BTC&to_currency=USD&apikey=ZBFWZJJKL5WA9XD0', (error, response, usdBody) => {
+                        if (response.statusCode === 200) {
+                            let bitcoinUSD = JSON.parse(usdBody)['Realtime Currency Exchange Rate']['5. Exchange Rate'];
+                            // console.log('bitcoinSEK', bitcoinSEK['Realtime Currency Exchange Rate']['5. Exchange Rate']);
+                            rtm.sendMessage(`Bitcoin ligger just nu på *${numberParser(parseFloat(bitcoinSEK).toFixed(0))} kr*, eller *$${numberParser(parseFloat(bitcoinUSD).toFixed(2))}* om man är en Amerikatt. Ehm... mjao.`, event.channel);
+                        }
+                    });
+                }
+            });
         }
     }
 
@@ -79,5 +95,16 @@ rtm.on(CLIENT_EVENTS.RTM.RAW_MESSAGE, (event) => {
         }
     }
 });
+
+// Lägg till tusen-separatorer, så det blir 160 000 istället för 160000.
+function numberParser(nummer){
+    var nummerRegex = /(\d+)(\d{3})/;
+    return String(nummer).replace(/^\d+/, (w) => {
+        while(nummerRegex.test(w)){
+            w = w.replace(nummerRegex, '$1 $2');
+        }
+        return w;
+    });
+}
 
 rtm.start();
