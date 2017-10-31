@@ -4,20 +4,24 @@ let moment = require('moment');
 let request = require('request');
 
 let botConfig = require('./config.js');
-let reactions = require('./reactions.js');
+let jpFunctions = require('./functions.js');
+
+jpFunctions.configureMoment();
 
 let bot_token = botConfig.getToken() || '';
 let myUserKey = 'U7QS9E8RY';
 
 let rtm = new RtmClient(bot_token);
 
-let meows = reactions.getReactions();
+let meows = jpFunctions.getReactions();
 let numberOfMeows = 0;
 let channel;
 let generalChannelId = 'C4RUQDECW'; // ID:t för #general
 let jpUtvecklingChannelId = 'C7RGH9LN5';
 
 let postedFridayFrog = false;
+let lastBitcoinPrice = 0;
+let lastBitcoinPriceCheck = moment();
 
 // The client will emit an RTM.AUTHENTICATED event on successful connection, with the `rtm.start` payload
 rtm.on(CLIENT_EVENTS.RTM.AUTHENTICATED, (rtmStartData) => {
@@ -29,7 +33,7 @@ rtm.on(CLIENT_EVENTS.RTM.AUTHENTICATED, (rtmStartData) => {
 
 // you need to wait for the client to fully connect before you can send messages
 rtm.on(CLIENT_EVENTS.RTM.RTM_CONNECTION_OPENED, () => {
-  rtm.sendMessage('Autodeployed! Eller, jag har i alla fall startats om. Mjao.', jpUtvecklingChannelId);
+//   rtm.sendMessage('Autodeployed! Eller, jag har i alla fall startats om. Mjao.', jpUtvecklingChannelId);
   console.log('channel opened', channel);
 });
 
@@ -52,12 +56,24 @@ rtm.on(CLIENT_EVENTS.RTM.RAW_MESSAGE, (event) => {
                     request('https://www.alphavantage.co/query?function=CURRENCY_EXCHANGE_RATE&from_currency=BTC&to_currency=USD&apikey=ZBFWZJJKL5WA9XD0', (error, response, usdBody) => {
                         if (response.statusCode === 200) {
                             let bitcoinUSD = JSON.parse(usdBody)['Realtime Currency Exchange Rate']['5. Exchange Rate'];
-                            // console.log('bitcoinSEK', bitcoinSEK['Realtime Currency Exchange Rate']['5. Exchange Rate']);
-                            rtm.sendMessage(`Bitcoin ligger just nu på *${numberParser(parseFloat(bitcoinSEK).toFixed(0))} kr*, eller *$${numberParser(parseFloat(bitcoinUSD).toFixed(2))}* om man är en Amerikatt. Ehm... mjao.`, event.channel);
+
+                            // Visar även den procentuella ändringen, utifall JP har kollat kurserna tidigare.
+                            if (lastBitcoinPrice) {
+                                let bitcoinDifference = bitcoinUSD / lastBitcoinPrice - 1;
+                                let bitcoinTimePassed = lastBitcoinPriceCheck.fromNow();
+                                rtm.sendMessage(`Bitcoin har ändrats med *${(bitcoinDifference * 100).toFixed(2)}%* sedan jag kollade för ${bitcoinTimePassed} och kostar nu *${jpFunctions.numberParser(parseFloat(bitcoinSEK).toFixed(0))} kr*, eller *$${jpFunctions.numberParser(parseFloat(bitcoinUSD).toFixed(2))}* om man är en Amerikatt.`, event.channel);
+                            }
+                            else {
+                                rtm.sendMessage(`Bitcoin kostar just nu *${jpFunctions.numberParser(parseFloat(bitcoinSEK).toFixed(0))} kr*, eller *$${jpFunctions.numberParser(parseFloat(bitcoinUSD).toFixed(2))}* om man är en Amerikatt. Ehm... mjao.`, event.channel);
+                            }
+
+                            lastBitcoinPrice = bitcoinUSD;
+                            bitcoinTimePassed = moment();
                         }
                         else {
                             rtm.sendMessage('Det gick inte att hämta bitcoin-kurserna... Meow :(');
                         }
+
                     });
                 }
                 else {
@@ -101,16 +117,5 @@ rtm.on(CLIENT_EVENTS.RTM.RAW_MESSAGE, (event) => {
         }
     }
 });
-
-// Lägg till tusen-separatorer, så det blir 160 000 istället för 160000.
-function numberParser(nummer){
-    var nummerRegex = /(\d+)(\d{3})/;
-    return String(nummer).replace(/^\d+/, (w) => {
-        while(nummerRegex.test(w)){
-            w = w.replace(nummerRegex, '$1 $2');
-        }
-        return w;
-    });
-}
 
 rtm.start();
