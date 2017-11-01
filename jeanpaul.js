@@ -42,7 +42,7 @@ rtm.on(CLIENT_EVENTS.RTM.RAW_MESSAGE, (event) => {
 
     // Om ett meddelande skickas, oavsett kanal.
     if (event.type === 'message') {
-        if (event.text && (event.text.includes(`<@${myUserKey}>`) || (event.text.includes(`JP`) || event.text.includes(`jp`)) {
+        if (event.text && (event.text.includes(`<@${myUserKey}>`) || event.text.includes(`JP`) || event.text.includes(`jp`))) {
             // let targetUser = '<@' +message.user+ '>';
             let meow = meows[Math.floor(Math.random()*meows.length)];
             let msg = meow;
