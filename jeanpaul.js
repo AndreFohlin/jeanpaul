@@ -42,13 +42,13 @@ rtm.on(CLIENT_EVENTS.RTM.RAW_MESSAGE, (event) => {
 
     // Om ett meddelande skickas, oavsett kanal.
     if (event.type === 'message') {
-        if (event.text && (event.text.includes(`<@${myUserKey}>`) || event.text.includes(`JP`))) {
+        if (event.text && (event.text.includes(`<@${myUserKey}>`) || (event.text.includes(`JP`) || event.text.includes(`jp`))) {
             // let targetUser = '<@' +message.user+ '>';
             let meow = meows[Math.floor(Math.random()*meows.length)];
             let msg = meow;
             rtm.sendMessage(msg, event.channel);
         }
-        else if (event.text.includes('bitcoin')) {
+        else if (event.text && event.text.includes('bitcoin')) {
             request('https://www.alphavantage.co/query?function=CURRENCY_EXCHANGE_RATE&from_currency=BTC&to_currency=SEK&apikey=ZBFWZJJKL5WA9XD0', (error, response, sekBody) => {
                 if (response.statusCode === 200) {
                     let bitcoinSEK = JSON.parse(sekBody)['Realtime Currency Exchange Rate']['5. Exchange Rate'];
