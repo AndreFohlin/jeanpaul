@@ -98,13 +98,37 @@ exports.getBitcoinPrice = function(event, rtm) {
                     lastBitcoinPriceCheck = moment();
                 }
                 else {
-                    rtm.sendMessage('Det gick inte att hämta bitcoin-kurserna... Meow :(');
+                    rtm.sendMessage('Det gick inte att hämta bitcoin-kurserna... Meow :(', event.channel);
                 }
 
             });
         }
         else {
-            rtm.sendMessage('Det gick inte att hämta bitcoin-kurserna... Meow :(');
+            rtm.sendMessage('Det gick inte att hämta bitcoin-kurserna... Meow :(', event.channel);
+        }
+    });
+}
+
+exports.getAktie = function(event, rtm, aktie) {
+    // aktie.replace(' ','+');
+
+    request(`https://finansportalen.services.six.se/finansportalen-web/rest/equity/quote/search?query=${aktie}`, (error, response, body) => {
+        if (response.statusCode === 200) {
+            body = JSON.parse(body);
+            if(!body.instruments.length) {
+                rtm.sendMessage('Jag hittade ingen aktie med det namnet.', event.channel)
+            }
+            else if(body.instruments.length > 1) {
+                let stocksFound = ''; 
+                body.instruments.forEach(stock => {
+                    stocksFound += `*${stock.longName.formatted}*, `;
+                });
+                rtm.sendMessage(`Jag hittade dessa: ${stocksFound}vilka av dem menade du?`, event.channel);
+            }
+            else if (body.instruments.length === 1) {
+                let stock = body.instruments[0];
+                rtm.sendMessage(`*${stock.longName.formatted}* - Senaste pris: *${stock.latestPrice.formatted}kr*, ${stock.percentageChangeToday.data > 0 ? '+' + stock.percentageChangeToday.formatted : stock.percentageChangeToday.formatted}%`, event.channel);
+            }
         }
     });
 }
