@@ -42,10 +42,19 @@ exports.getReactions = function() {
 		':cat:',
 		':cat2:',
 		':kan:',
-        'mjao?',
-        'MJAO!',
-        'Mjaoooo :heart_eyes_cat:',
-        ':pouting_cat: :fish:'
+		'mjao?',
+		'MJAO!',
+		'Mjaoooo :heart_eyes_cat:',
+		':pouting_cat: :fish:',
+		'<3'
+		'Mrroau',
+		':smiley_cat:',
+		'Meow meoew meOW maow',
+		':tongue:',
+		':tiger:',
+		':tiger2:',
+		':sparkling_heart:',
+		':bill:
 	];
 };
 
