@@ -46,7 +46,7 @@ exports.getReactions = function() {
 		'MJAO!',
 		'Mjaoooo :heart_eyes_cat:',
 		':pouting_cat: :fish:',
-		'<3'
+		'<3',
 		'Mrroau',
 		':smiley_cat:',
 		'Meow meoew meOW maow',
