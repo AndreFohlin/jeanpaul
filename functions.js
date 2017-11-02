@@ -86,7 +86,7 @@ exports.getBitcoinPrice = function(event, rtm) {
                     }
 
                     lastBitcoinPrice = bitcoinUSD;
-                    bitcoinTimePassed = moment();
+                    lastBitcoinPriceCheck = moment();
                 }
                 else {
                     rtm.sendMessage('Det gick inte att hämta bitcoin-kurserna... Meow :(');
