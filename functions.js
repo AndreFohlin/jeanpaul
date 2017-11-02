@@ -109,9 +109,7 @@ exports.getBitcoinPrice = function(event, rtm) {
     });
 }
 
-exports.getAktie = function(event, rtm, aktie) {
-    // aktie.replace(' ','+');
-
+exports.searchStock = function(event, rtm, aktie) {
     request(`https://finansportalen.services.six.se/finansportalen-web/rest/equity/quote/search?query=${aktie}`, (error, response, body) => {
         if (response.statusCode === 200) {
             body = JSON.parse(body);
@@ -128,6 +126,9 @@ exports.getAktie = function(event, rtm, aktie) {
             else if (body.instruments.length === 1) {
                 let stock = body.instruments[0];
                 rtm.sendMessage(`*${stock.longName.formatted}* - Senaste pris: *${stock.latestPrice.formatted}kr*, ${stock.percentageChangeToday.data > 0 ? '+' + stock.percentageChangeToday.formatted : stock.percentageChangeToday.formatted}%`, event.channel);
+            }
+            else {
+                rtm.sendMessage(`Noooo, nåt gick fel. Kalla på min skötare! Meow.`, event.channel);
             }
         }
     });

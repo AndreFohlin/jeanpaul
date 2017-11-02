@@ -46,7 +46,7 @@ rtm.on(CLIENT_EVENTS.RTM.RAW_MESSAGE, (event) => {
         }
         else if (event.text && event.text.includes('!aktie')) {
             let aktie = event.text.replace('!aktie ', '');
-            jpFunctions.getAktie(event, rtm, aktie);
+            jpFunctions.searchStock(event, rtm, aktie);
         }
     }
 
