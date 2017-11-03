@@ -54,7 +54,8 @@ exports.getReactions = function() {
 		':tiger:',
 		':tiger2:',
 		':sparkling_heart:',
-		':bill:'
+		':bill:',
+		'Wubba lubba meow meow!'
 	];
 };
 
