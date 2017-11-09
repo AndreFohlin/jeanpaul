@@ -8,6 +8,7 @@ let lastBitcoinPrice = 0;
 let lastBitcoinPriceCheck = moment();
 
 exports.sendHelp = function(event, rtm) {
+    let meow = jpFunctions.getMeow();
     rtm.sendMessage(`Detta kan du göra: 
                     *!temp* - Hämtar aktuell temperatur i Stockholm. | 
                     *!aktie <aktienamn>* - Hämtar aktiekurs från svenska börser, med 15 minutes fördröjning | 
