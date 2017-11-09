@@ -49,19 +49,27 @@ exports.getReactions = function() {
 		':heart:',
 		'Mrroau',
 		':smiley_cat:',
-		'Meow meoew meOW maow',
+		'Meow meoew MEOW maow',
 		':tongue:',
 		':tiger:',
 		':tiger2:',
 		':sparkling_heart:',
 		':bill:',
-		'Wubba lubba meow meow!'
+        'Wubba lubba meow meow!',
+        'meow',
+        'Meow.'
 	];
 };
 
-exports.meow = function(rtm, channelId) {
+exports.getMeow = function() {
     let meows = jpFunctions.getReactions();
     let meow = meows[Math.floor(Math.random()*meows.length)];
+
+    return meow;
+}
+
+exports.meow = function(rtm, channelId) {
+    let meow = jpFunctions.getMeow();
     rtm.sendMessage(meow, channelId);
 }
 
@@ -112,24 +120,25 @@ exports.getBitcoinPrice = function(event, rtm) {
 
 exports.searchStock = function(event, rtm, aktie) {
     request(`https://finansportalen.services.six.se/finansportalen-web/rest/equity/quote/search?query=${aktie}`, (error, response, body) => {
+        let meow = jpFunctions.getMeow();
         if (response.statusCode === 200) {
             body = JSON.parse(body);
             if(!body.instruments.length) {
-                rtm.sendMessage('Jag hittade ingen aktie med det namnet.', event.channel)
+                rtm.sendMessage(`Jag hittade ingen aktie med det namnet. ${meow}`, event.channel)
             }
             else if(body.instruments.length > 1) {
                 let stocksFound = ''; 
                 body.instruments.forEach(stock => {
                     stocksFound += `*${stock.longName.formatted}*, `;
                 });
-                rtm.sendMessage(`Jag hittade dessa: ${stocksFound}vilka av dem menade du?`, event.channel);
+                rtm.sendMessage(`Jag hittade dessa: ${stocksFound}vilka av dem menade du? ${meow}`, event.channel);
             }
             else if (body.instruments.length === 1) {
                 let stock = body.instruments[0];
-                rtm.sendMessage(`*${stock.longName.formatted}* - Senaste pris: *${stock.latestPrice.formatted}kr*, ${stock.percentageChangeToday.data > 0 ? '+' + stock.percentageChangeToday.formatted : stock.percentageChangeToday.formatted}%`, event.channel);
+                rtm.sendMessage(`*${stock.longName.formatted}* - Senaste pris: *${stock.latestPrice.formatted}kr*, ${stock.percentageChangeToday.data > 0 ? '+' + stock.percentageChangeToday.formatted : stock.percentageChangeToday.formatted}%. ${meow}`, event.channel);
             }
             else {
-                rtm.sendMessage(`Noooo, nåt gick fel. Kalla på min skötare! Meow.`, event.channel);
+                rtm.sendMessage(`Noooo, nåt gick fel. Kalla på min skötare! ${meow}`, event.channel);
             }
         }
     });
@@ -149,3 +158,14 @@ exports.postFrog = function(rtm, generalChannelId) {
         }
     }
 }
+
+exports.checkTemp = function(event, rtm) {
+    request(`http://www.temperatur.nu/internal_sign.php?stad=kungsholmen`, (error, response, body) => {
+        let meow = jpFunctions.getMeow();
+        let temp = body.split("<temp>").pop();
+        temp = temp.split("</temp>").shift();
+
+        rtm.sendMessage(`Det är just nu *${temp}* grader utomhus. ${meow}`, event.channel);
+    });
+}
+

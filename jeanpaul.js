@@ -28,8 +28,8 @@ rtm.on(CLIENT_EVENTS.RTM.AUTHENTICATED, (rtmStartData) => {
 
 // you need to wait for the client to fully connect before you can send messages
 rtm.on(CLIENT_EVENTS.RTM.RTM_CONNECTION_OPENED, () => {
-  rtm.sendMessage('Autodeployed! Eller, jag har i alla fall startats om. Mjao.', jpUtvecklingChannelId);
-  console.log('channel opened', channel);
+    rtm.sendMessage('Autodeployed! Eller, jag har i alla fall startats om. Mjao.', jpUtvecklingChannelId);
+    console.log('channel opened', channel);
 });
 
 rtm.on(CLIENT_EVENTS.RTM.RAW_MESSAGE, (event) => {
@@ -47,6 +47,9 @@ rtm.on(CLIENT_EVENTS.RTM.RAW_MESSAGE, (event) => {
         else if (event.text && event.text.includes('!aktie')) {
             let aktie = event.text.replace('!aktie ', '');
             jpFunctions.searchStock(event, rtm, aktie);
+        }
+        else if (event.text && event.text.includes('!temp')) {
+            jpFunctions.checkTemp(event, rtm);
         }
     }
 
