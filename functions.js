@@ -174,7 +174,7 @@ exports.checkTemp = function(event, rtm) {
         temp = temp.split("</temp>").shift();
         if (!isNaN(temp)) {
             if (lastTemperature) {
-                let temperatureDifference = temp - lastTemperature;
+                let temperatureDifference = +(temp - lastTemperature).toFixed(2);
                 let temperatureTimePassed = lastTemperatureCheck.fromNow();
                 if (temperatureDifference === 0) {
                     rtm.sendMessage(`Det är just nu *${temp} °C* utomhus, vilket är samma temperatur som när jag kollade för ${temperatureTimePassed}. ${meow}`, event.channel);
