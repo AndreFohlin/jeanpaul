@@ -41,7 +41,7 @@ rtm.on(CLIENT_EVENTS.RTM.RAW_MESSAGE, (event) => {
             // let targetUser = '<@' +message.user+ '>';
             jpFunctions.meow(rtm, event.channel);
         }
-        else if (event.text && event.text.includes('bitcoin')) {
+        else if (event.text && event.text.includes('!bitcoin')) {
             jpFunctions.getBitcoinPrice(event, rtm);
         }
         else if (event.text && event.text.includes('!aktie')) {
@@ -50,6 +50,9 @@ rtm.on(CLIENT_EVENTS.RTM.RAW_MESSAGE, (event) => {
         }
         else if (event.text && event.text.includes('!temp')) {
             jpFunctions.checkTemp(event, rtm);
+        }
+        else if (event.text && event.text.includes('!help')) {
+            jpFunctions.sendHelp(event, rtm);
         }
     }
 

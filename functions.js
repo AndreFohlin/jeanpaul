@@ -7,6 +7,14 @@ let postedFridayFrog = false;
 let lastBitcoinPrice = 0;
 let lastBitcoinPriceCheck = moment();
 
+exports.sendHelp = function(event, rtm) {
+    rtm.sendMessage(`Detta kan du göra: 
+                    *!temp* - Hämtar aktuell temperatur i Stockholm. | 
+                    *!aktie <aktienamn>* - Hämtar aktiekurs från svenska börser, med 15 minutes fördröjning | 
+                    *!bitcoin* - Hämtar det aktuella bitcoin-priset.
+                    ${meow}`, event.channel)
+}
+
 exports.configureMoment = function() {
     moment.updateLocale('en', {
         relativeTime : {
