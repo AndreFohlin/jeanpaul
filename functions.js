@@ -12,11 +12,7 @@ let lastTemperatureCheck = moment();
 
 exports.sendHelp = function(event, rtm) {
     let meow = jpFunctions.getMeow();
-    rtm.sendMessage(`Detta kan du göra: 
-                    *!temp* - Hämtar aktuell temperatur i Stockholm. | 
-                    *!aktie <aktienamn>* - Hämtar aktiekurs från svenska börser, med 15 minutes fördröjning | 
-                    *!bitcoin* - Hämtar det aktuella bitcoin-priset.
-                    ${meow}`, event.channel)
+    rtm.sendMessage(`Detta kan du göra: *!temp* - Hämtar aktuell temperatur på Kungsholmen i Stockholm. | *!aktie <aktienamn>* - Hämtar aktiekurs från svenska börser, med 15 minutes fördröjning | *!bitcoin* - Hämtar det aktuella bitcoin-priset. ${meow}`, event.channel)
 }
 
 exports.configureMoment = function() {
