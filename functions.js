@@ -7,6 +7,9 @@ let postedFridayFrog = false;
 let lastBitcoinPrice = 0;
 let lastBitcoinPriceCheck = moment();
 
+let lastTemperature = 0;
+let lastTemperatureCheck = moment();
+
 exports.sendHelp = function(event, rtm) {
     let meow = jpFunctions.getMeow();
     rtm.sendMessage(`Detta kan du göra: 
@@ -173,8 +176,22 @@ exports.checkTemp = function(event, rtm) {
         let meow = jpFunctions.getMeow();
         let temp = body.split("<temp>").pop();
         temp = temp.split("</temp>").shift();
+        if (lastTemperature) {
+            let temperatureDifference = temp - lastTemperature;
+            let temperatureTimePassed = lastTemperatureCheck.fromNow();
+            if (temperatureDifference === 0) {
+                rtm.sendMessage(`Det är just nu *${temp} °C* utomhus, vilket är samma temperatur som när jag kollade för ${temperatureTimePassed}. ${meow}`, event.channel);
+            }
+            else {
+                rtm.sendMessage(`Det är just nu *${temp} °C* utomhus, och det har ändrats med *${temperatureDifference} °C* sedan jag kollade för ${temperatureTimePassed}. ${meow}`, event.channel);
+            }
+        }
+        else {
+            rtm.sendMessage(`Det är just nu *${temp} °C* utomhus. ${meow}`, event.channel);
+        }
 
-        rtm.sendMessage(`Det är just nu *${temp}* grader utomhus. ${meow}`, event.channel);
+        lastTemperature = temp;
+        lastTemperatureCheck = moment();
     });
 }
 
