@@ -65,7 +65,10 @@ exports.getReactions = function() {
 		':bill:',
         'Wubba lubba meow meow!',
         'meow',
-        'Meow.'
+        'Meow.',
+        'Purrrrrrr..',
+        'Meowsa!',
+        'Mew'
 	];
 };
 
@@ -126,7 +129,8 @@ exports.getBitcoinPrice = function(event, rtm) {
     });
 }
 
-exports.searchStock = function(event, rtm, aktie) {
+exports.searchStock = function(event, rtm) {
+    let aktie = event.text.replace('!aktie ', '');
     request(`https://finansportalen.services.six.se/finansportalen-web/rest/equity/quote/search?query=${aktie}`, (error, response, body) => {
         let meow = jpFunctions.getMeow();
         if (response.statusCode === 200) {
@@ -194,5 +198,54 @@ exports.checkTemp = function(event, rtm) {
         lastTemperature = temp;
         lastTemperatureCheck = moment();
     });
+}
+
+/* Få JP att prata till en specifik kanal. Lämna allt tomt och kör bara !prata för att automatiskt mjaoa till #general.
+* 
+*  ex: !prata
+*  eller
+*  ex: !prata <kanal> <meddelande>
+*/
+exports.speak = function(event, rtm, generalChannelId) {
+    
+    // Remove with and without the space, to make sure the !speak is gone.
+    let speak = event.text.replace('!prata', '');
+
+    // Om man bara vill att JP ska köra sitt mjao-race, i #general
+    if (speak === '' || speak === ' ') {
+        jpFunctions.meow(rtm, generalChannelId);
+    }
+    else {
+        let words = speak.split(' '); // Delar upp alla orden till en array.
+        words.shift(); // Tar bort den första i arrayen, som alltid är ett endast mellanrum.
+
+        // Om man har skrivit in en godkänd kanal, så ser det ut typ så här: <#C765S5ECW|aktier>
+        if (words[0].indexOf('<#') > -1) {
+            words[0] = words[0].replace('<#', '');
+            let channel = words[0].split('|')[0];
+            words.shift(); // Ta bort den första delen av arrayen igen, för då försvinner kanalnamnet som vi inte behöver. Eftersom vi extraherat kanal-id:t.
+
+            if (words.length) {
+                let sentence = words.join(' ');
+                rtm.sendMessage(sentence, channel);
+            }
+            else {
+                jpFunctions.meow(rtm, channel);
+            }
+        }
+        else {
+            let meow = jpFunctions.getMeow();
+            rtm.sendMessage(`Försök inte lura mig gosse, jag bara riktiga kanaler tål! Försök igen, och glöm inte #. ${meow}`, event.channel);
+        }
+    }
+}
+
+/*
+* Hämta kanal-informationen som ett objekt med hjälp av namnet som en string.
+* ex: jpFunctions.getChannelEntity('#general', rtm);
+*/
+exports.getChannelEntity = function(channel, rtm) {
+    channel = channel.replace(/^#/, '');
+    return rtm.dataStore.getChannelByName(channel) || rtm.dataStore.getGroupByName(channel);
 }
 

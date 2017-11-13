@@ -1,4 +1,5 @@
 let RtmClient = require('@slack/client').RtmClient;
+var MemoryDataStore = require('@slack/client').MemoryDataStore;
 let CLIENT_EVENTS = require('@slack/client').CLIENT_EVENTS;
 let moment = require('moment');
 
@@ -10,7 +11,7 @@ jpFunctions.configureMoment();
 let bot_token = botConfig.getToken() || '';
 let myUserKey = 'U7QS9E8RY';
 
-let rtm = new RtmClient(bot_token);
+let rtm = new RtmClient(bot_token, { dataStore: new MemoryDataStore() });
 
 let meows = jpFunctions.getReactions();
 let numberOfMeows = 0;
@@ -37,22 +38,26 @@ rtm.on(CLIENT_EVENTS.RTM.RAW_MESSAGE, (event) => {
 
     // Om ett meddelande skickas, oavsett kanal.
     if (event.type === 'message') {
-        if (event.text && (event.text.includes(`<@${myUserKey}>`) || event.text.includes(`JP`) || event.text.includes(`jp`))) {
+        if (event.text && event.text[0] !== '!' && (event.text.includes(`<@${myUserKey}>`) || event.text.includes(`JP`) || event.text.includes(`jp`))) {
             // let targetUser = '<@' +message.user+ '>';
             jpFunctions.meow(rtm, event.channel);
         }
-        else if (event.text && event.text.includes('!bitcoin')) {
-            jpFunctions.getBitcoinPrice(event, rtm);
-        }
-        else if (event.text && event.text.includes('!aktie')) {
-            let aktie = event.text.replace('!aktie ', '');
-            jpFunctions.searchStock(event, rtm, aktie);
-        }
-        else if (event.text && event.text.includes('!temp')) {
-            jpFunctions.checkTemp(event, rtm);
-        }
-        else if (event.text && event.text.includes('!help')) {
-            jpFunctions.sendHelp(event, rtm);
+        else if (event.text) {
+            if (event.text.includes('!bitcoin')) {
+                jpFunctions.getBitcoinPrice(event, rtm);
+            }
+            else if (event.text.includes('!aktie')) {
+                jpFunctions.searchStock(event, rtm);
+            }
+            else if (event.text.includes('!temp')) {
+                jpFunctions.checkTemp(event, rtm);
+            }
+            else if (event.text.includes('!help')) {
+                jpFunctions.sendHelp(event, rtm);
+            }
+            else if (event.text.includes('!prata')) {
+                jpFunctions.speak(event, rtm, generalChannelId);
+            }
         }
     }
 
