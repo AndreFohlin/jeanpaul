@@ -147,7 +147,7 @@ exports.searchStock = function(event, rtm) {
             }
             else if (body.instruments.length === 1) {
                 let stock = body.instruments[0];
-                rtm.sendMessage(`*${stock.longName.formatted}* - Senaste pris: *${stock.latestPrice.formatted}kr*, ${stock.percentageChangeToday.data > 0 ? '+' + stock.percentageChangeToday.formatted : stock.percentageChangeToday.formatted}%. ${meow}`, event.channel);
+                rtm.sendMessage(`*${stock.longName.formatted}* - Senaste pris (15 min fördröjt): *${stock.latestPrice.formatted}kr*, ${stock.percentageChangeToday.data > 0 ? '+' + stock.percentageChangeToday.formatted : stock.percentageChangeToday.formatted}%. ${meow}`, event.channel);
             }
             else {
                 rtm.sendMessage(`Noooo, nåt gick fel. Kalla på min skötare! ${meow}`, event.channel);
