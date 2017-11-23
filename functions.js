@@ -355,10 +355,12 @@ exports.getWeather = function(event, rtm, godmorgon, generalChannelId) {
 }
 
 exports.getGif = function(event, rtm, getRandom) {
+    let url = 'http://api.giphy.com/v1/gifs';
+    let key = 'mcARlUwzVuaAZ9d0SNRLLnLlp4aVIHHQ';
     if (getRandom) {
         let gif = event.text.replace('!gifr', '');
         gif = encodeURI(gif);
-        request(`http://api.giphy.com/v1/gifs/random?tag=${gif}&api_key=mcARlUwzVuaAZ9d0SNRLLnLlp4aVIHHQ`, (error, response, body) => {
+        request(`${url}/random?tag=${gif}&api_key=${key}`, (error, response, body) => {
             if (error) {
                 rtm.sendMessage('Det där gick åt katten. Meow. Något gick verkligen snett. :( ', event.channel);
                 return;
@@ -370,7 +372,7 @@ exports.getGif = function(event, rtm, getRandom) {
     else {
         let gif = event.text.replace('!gif', '');
         gif = encodeURI(gif);
-        request(`http://api.giphy.com/v1/gifs/search?q=${gif}&api_key=mcARlUwzVuaAZ9d0SNRLLnLlp4aVIHHQ&limit=1`, (error, response, body) => {
+        request(`${url}/search?q=${gif}&api_key=${key}&limit=1`, (error, response, body) => {
             if (error) {
                 rtm.sendMessage('Det där gick åt katten. Meow. Något gick verkligen snett. :( ', event.channel);
                 return;
