@@ -342,11 +342,11 @@ exports.getWeather = function(event, rtm, godmorgon, generalChannelId) {
             }
 
             if (godmorgon) {
-                message += `God morgon mina bekanta! ${temperatureMessage} På förmiddagen blir det mellan *${temperature[0]} °C* till *${temperature[temperature.length - 1]} °C* och överlag *${weatherSymbol[symbolMedian - 1]}*. På eftermiddagen blir det *${nextTemperature[0]} °C* till *${nextTemperature[nextTemperature.length - 1]} °C* och *${weatherSymbol[nextSymbolMedian - 1]}*. ${meow}`;
+                message += `God morgon mina bekanta! ${temperatureMessage} På förmiddagen blir det mellan *${temperature[0]} °C* till *${temperature[temperature.length - 1]} °C* och *${weatherSymbol[symbolMedian - 1]}*. På eftermiddagen blir det *${nextTemperature[0]} °C* till *${nextTemperature[nextTemperature.length - 1]} °C* och *${weatherSymbol[nextSymbolMedian - 1]}*. ${meow}`;
                 rtm.sendMessage(message, generalChannelId);
             }
             else {
-                message += `${temperatureMessage} De kommande 6 timmarna blir det mellan *${temperature[0]} °C* till *${temperature[temperature.length - 1]} °C* och överlag *${weatherSymbol[symbolMedian - 1]}*. Sen blir det *${nextTemperature[0]} °C* till *${nextTemperature[nextTemperature.length - 1]} °C* och *${weatherSymbol[nextSymbolMedian - 1]}*. ${meow}`;
+                message += `${temperatureMessage} De kommande 6 timmarna blir det mellan *${temperature[0]} °C* till *${temperature[temperature.length - 1]} °C* och *${weatherSymbol[symbolMedian - 1]}*. Sen blir det *${nextTemperature[0]} °C* till *${nextTemperature[nextTemperature.length - 1]} °C* och *${weatherSymbol[nextSymbolMedian - 1]}*. ${meow}`;
                 rtm.sendMessage(message, event.channel);
             }
 
