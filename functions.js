@@ -223,7 +223,7 @@ exports.checkTemp = function(event, rtm) {
 */
 exports.speak = function(event, rtm, generalChannelId) {
     
-    // Remove with and without the space, to make sure the !speak is gone.
+    // Remove with and without the space, to make sure the !prata is gone.
     let speak = event.text.replace('!prata', '');
 
     // Om man bara vill att JP ska köra sitt mjao-race, i #general
@@ -352,6 +352,33 @@ exports.getWeather = function(event, rtm, godmorgon, generalChannelId) {
 
         });
     });    
+}
+
+exports.getGif = function(event, rtm, getRandom) {
+    if (getRandom) {
+        let gif = event.text.replace('!gifr', '');
+        gif = encodeURI(gif);
+        request(`http://api.giphy.com/v1/gifs/random?tag=${gif}&api_key=mcARlUwzVuaAZ9d0SNRLLnLlp4aVIHHQ`, (error, response, body) => {
+            if (error) {
+                rtm.sendMessage('Det där gick åt katten. Meow. Något gick verkligen snett. :( ', event.channel);
+                return;
+            }
+            body = JSON.parse(body);
+            rtm.sendMessage(body.data.image_url, event.channel);
+        });
+    }
+    else {
+        let gif = event.text.replace('!gif', '');
+        gif = encodeURI(gif);
+        request(`http://api.giphy.com/v1/gifs/search?q=${gif}&api_key=mcARlUwzVuaAZ9d0SNRLLnLlp4aVIHHQ&limit=1`, (error, response, body) => {
+            if (error) {
+                rtm.sendMessage('Det där gick åt katten. Meow. Något gick verkligen snett. :( ', event.channel);
+                return;
+            }
+            body = JSON.parse(body);
+            rtm.sendMessage(body.data[0].images.original.url, event.channel);
+        });
+    }
 }
 
 /*

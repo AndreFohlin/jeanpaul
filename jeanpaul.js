@@ -61,6 +61,12 @@ rtm.on(CLIENT_EVENTS.RTM.RAW_MESSAGE, (event) => {
             else if(event.text.includes('!väder')) {
                 jpFunctions.getWeather(event, rtm);
             }
+            else if(event.text.includes('!gif')) { // Get regular gif
+                jpFunctions.getGif(event, rtm, false);
+            }
+            else if(event.text.includes('!gifr')) { // Gif Random
+                jpFunctions.getGif(event, rtm, true);
+            }
         }
     }
 
