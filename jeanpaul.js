@@ -58,6 +58,9 @@ rtm.on(CLIENT_EVENTS.RTM.RAW_MESSAGE, (event) => {
             else if (event.text.includes('!prata')) {
                 jpFunctions.speak(event, rtm, generalChannelId);
             }
+            else if(event.text.includes('!väder')) {
+                jpFunctions.getWeather(event, rtm);
+            }
         }
     }
 
@@ -78,7 +81,7 @@ rtm.on(CLIENT_EVENTS.RTM.RAW_MESSAGE, (event) => {
 
     // En slags ping/pong mellan server och bot. Kommer drygt varje sekund, men kan missas utifall andra event pågår.
     if (event.type === 'pong') {
-        jpFunctions.postFrog(rtm, generalChannelId);
+        jpFunctions.timedPost(event, rtm, generalChannelId);
     }
 });
 

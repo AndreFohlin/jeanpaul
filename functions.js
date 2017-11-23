@@ -1,8 +1,11 @@
 let moment = require('moment');
 let request = require('request');
-let jpFunctions = require('./functions.js'); // Jepp, jag kan nog inte tillräckligt mycket om node. Men denna importerar sig själv :D
 
+let jpFunctions = require('./functions.js'); // Jag kan nog inte tillräckligt mycket om node. Men denna importerar sig själv :D
+
+// Allmänna variabler
 let postedFridayFrog = false;
+let postedGoodMorning = false;
 
 let lastBitcoinPrice = 0;
 let lastBitcoinPriceCheck = moment();
@@ -156,7 +159,7 @@ exports.searchStock = function(event, rtm) {
     });
 }
 
-exports.postFrog = function(rtm, generalChannelId) {
+exports.timedPost = function(event, rtm, generalChannelId) {
     // Posta fredagsgrodan, exakt klockan 08:07 på fredagar
     if (!postedFridayFrog) {
         if (moment().format('dddd HH:mm') === 'Friday 08:07') { 
@@ -169,6 +172,18 @@ exports.postFrog = function(rtm, generalChannelId) {
             postedFridayFrog = false; // Reset fridayfrog
         }
     }
+
+    if (!postedGoodMorning) {
+        if (moment().format('HH:mm') === '07:30') {
+            jpFunctions.getWeather(event, rtm, true, generalChannelId);
+            postedGoodMorning = true;
+        }
+        else {
+            if (moment().format('HH:mm') !== '07:30') {
+                postedGoodMorning = false;
+            }
+        }
+    }
 }
 
 exports.checkTemp = function(event, rtm) {
@@ -176,7 +191,7 @@ exports.checkTemp = function(event, rtm) {
         let meow = jpFunctions.getMeow();
         let temp = body.split("<temp>").pop();
         temp = temp.split("</temp>").shift();
-        if (!isNaN(temp)) {
+        if (!isNaN(temp) && !error) {
             if (lastTemperature) {
                 let temperatureDifference = +(temp - lastTemperature).toFixed(2);
                 let temperatureTimePassed = lastTemperatureCheck.fromNow();
@@ -190,13 +205,13 @@ exports.checkTemp = function(event, rtm) {
             else {
                 rtm.sendMessage(`Det är just nu *${temp} °C* utomhus. ${meow}`, event.channel);
             }
+            lastTemperature = temp;
+            lastTemperatureCheck = moment();
         }
         else {
             rtm.sendMessage(`Det gick inte att kolla temperaturen ute just nu :sob: ${meow}`, event.channel);
         }
 
-        lastTemperature = temp;
-        lastTemperatureCheck = moment();
     });
 }
 
@@ -240,6 +255,98 @@ exports.speak = function(event, rtm, generalChannelId) {
     }
 }
 
+exports.getWeather = function(event, rtm, godmorgon, generalChannelId) {
+    let weather;
+    let weatherUrl = `https://opendata-download-metfcst.smhi.se/api/category/pmp3g/version/2/geotype/point/lon/18.071197/lat/59.32536/data.json`;
+
+    let weatherSymbol = [
+        'molnfritt',
+        'nästan molnfritt',
+        'växlande molnighet',
+        'halvklart',
+        'mestadels molnigt',
+        'molnigt',
+        'dimma',
+        'lättare regnskurar',
+        'regnskurar',
+        'rejält med regn',
+        'åska',
+        'lättare snöblandat regn',
+        'snöblandat regn',
+        'rejält med snöblandat regn',
+        'lättare snö',
+        'snöfall',
+        'rejält med snö',
+        'lättare regnskurar',
+        'regnskurar',
+        'rejält med regn',
+        'åska',
+        'lättare snöblandat regn',
+        'snöblandat regn',
+        'rejält med snöblandat regn',
+        'lättare snöfall',
+        'snöfall',
+        'rejält med snö'
+    ];
+
+    // First check current temperature
+    request(`http://www.temperatur.nu/internal_sign.php?stad=kungsholmen`, (tempError, response, body) => {
+        let meow = jpFunctions.getMeow();
+        let temp = body.split("<temp>").pop();
+        temp = temp.split("</temp>").shift();
+        
+        // Then check the weather prognosis.
+        request(weatherUrl, (smhiError, response, body) => {
+            let meow = jpFunctions.getMeow();
+            if (smhiError) {
+                rtm.sendMessage(`Nåt gick åt skogen när jag försökte hämta väderdata. ${meow}`, event.channel);
+                return;
+            }
+            body = JSON.parse(body);
+    
+            let symbols = [];
+            let temperature = [];
+            for (i = 0; i < 12; i++) {
+                symbols.push(body.timeSeries[i].parameters[18].values[0]);
+                
+                // Get all the temperatures and push it into an array.
+                let upcomingTemperature = body.timeSeries[i].parameters.find(parameter => {
+                    return parameter.name === 't';
+                });
+                temperature.push(upcomingTemperature.values[0]);
+            }
+            
+            // Sort temperatures so we can get the highest and lowest.
+            temperature.sort((a, b) => a - b);
+            
+            let symbolMedianen = findMedian(symbols);
+            
+            // Setup the message
+            let message = '';
+
+            if (godmorgon) {
+                message += 'God morgon mina bekanta! ';
+            }
+
+            // Has current temperature?
+            if (!isNaN(temp)) {
+                message += `Just nu är det *${temp} °C* ute, och `;
+                lastTemperature = temp;
+                lastTemperatureCheck = moment();
+            }
+
+            if (godmorgon) {
+                message += `idag blir det mellan *${temperature[0]} °C* och *${temperature[temperature.length - 1]} °C*. Överlag kommer det att vara *${weatherSymbol[symbolMedianen - 1]}*. ${meow}`;
+            }
+            if (!godmorgon) {
+                message += `de kommande 12 timmarna blir det mellan *${temperature[0]} °C* och *${temperature[temperature.length - 1]} °C*. Överlag kommer det att vara *${weatherSymbol[symbolMedianen - 1]}*. ${meow}`;
+            }
+
+            rtm.sendMessage(message, event.channel);
+        });
+    });    
+}
+
 /*
 * Hämta kanal-informationen som ett objekt med hjälp av namnet som en string.
 * ex: jpFunctions.getChannelEntity('#general', rtm);
@@ -249,3 +356,18 @@ exports.getChannelEntity = function(channel, rtm) {
     return rtm.dataStore.getChannelByName(channel) || rtm.dataStore.getGroupByName(channel);
 }
 
+// Hitta medianen av en array av siffror.
+function findMedian(values) {
+    values.sort((a, b) => {
+        return a - b;
+    });
+    
+    let half = Math.floor(values.length/2);
+
+    if(values.length % 2) {
+        return values[half];
+    }
+    else {
+        return (values[half - 1] + values[half]) / 2.0;
+    }
+}
