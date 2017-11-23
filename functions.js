@@ -298,15 +298,20 @@ exports.getWeather = function(event, rtm, godmorgon, generalChannelId) {
         // Then check the weather prognosis.
         request(weatherUrl, (smhiError, response, body) => {
             let meow = jpFunctions.getMeow();
+            let message = '';
+            let symbols = [];
+            let afternoonSymbols = [];
+            let temperature = [];
+            let afternoonTemperature = [];
+
             if (smhiError) {
                 rtm.sendMessage(`Nåt gick åt skogen när jag försökte hämta väderdata. ${meow}`, event.channel);
                 return;
             }
             body = JSON.parse(body);
     
-            let symbols = [];
-            let temperature = [];
-            for (i = 0; i < 12; i++) {
+            
+            for (i = 0; i < 6; i++) {
                 symbols.push(body.timeSeries[i].parameters[18].values[0]);
                 
                 // Get all the temperatures and push it into an array.
@@ -318,11 +323,8 @@ exports.getWeather = function(event, rtm, godmorgon, generalChannelId) {
             
             // Sort temperatures so we can get the highest and lowest.
             temperature.sort((a, b) => a - b);
-            
             let symbolMedianen = findMedian(symbols);
-            
-            // Setup the message
-            let message = '';
+
 
             if (godmorgon) {
                 message += 'God morgon mina bekanta! ';
@@ -336,13 +338,27 @@ exports.getWeather = function(event, rtm, godmorgon, generalChannelId) {
             }
 
             if (godmorgon) {
-                message += `idag blir det mellan *${temperature[0]} °C* och *${temperature[temperature.length - 1]} °C*. Överlag kommer det att vara *${weatherSymbol[symbolMedianen - 1]}*. ${meow}`;
+                for (i = 5; i < 12; i++) {
+                    afternoonSymbols.push(body.timeSeries[i].parameters[18].values[0]);
+                    
+                    // Get all the temperatures and push it into an array.
+                    let upcomingTemperature = body.timeSeries[i].parameters.find(parameter => {
+                        return parameter.name === 't';
+                    });
+                    afternoonTemperature.push(upcomingTemperature.values[0]);
+                }
+                // Sort temperatures so we can get the highest and lowest.
+                afternoonTemperature.sort((a, b) => a - b);
+                let afternoonSymbolMedianen = findMedian(afternoonSymbols);
+
+                message += `på förmiddagen blir det mellan *${temperature[0]} °C* till *${temperature[temperature.length - 1]} °C* och överlag *${weatherSymbol[symbolMedianen - 1]}*. På eftermiddagen blir det mellan *${afternoonTemperature[0]} °C* till *${afternoonTemperature[afternoonTemperature.length - 1]} °C* och överlag *${weatherSymbol[afternoonSymbolMedianen - 1]}*. ${meow}`;
+                rtm.sendMessage(message, generalChannelId);
             }
             if (!godmorgon) {
-                message += `de kommande 12 timmarna blir det mellan *${temperature[0]} °C* och *${temperature[temperature.length - 1]} °C*. Överlag kommer det att vara *${weatherSymbol[symbolMedianen - 1]}*. ${meow}`;
+                message += `de kommande 6 timmarna blir det mellan *${temperature[0]} °C* och *${temperature[temperature.length - 1]} °C*. Överlag kommer det att vara *${weatherSymbol[symbolMedianen - 1]}*. ${meow}`;
+                rtm.sendMessage(message, event.channel);
             }
 
-            rtm.sendMessage(message, event.channel);
         });
     });    
 }
