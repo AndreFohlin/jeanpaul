@@ -355,32 +355,42 @@ exports.getWeather = function(event, rtm, godmorgon, generalChannelId) {
 }
 
 exports.getGif = function(event, rtm, getRandom) {
-    let url = 'http://api.giphy.com/v1/gifs';
-    let key = 'mcARlUwzVuaAZ9d0SNRLLnLlp4aVIHHQ';
-    if (getRandom) {
-        let gif = event.text.replace('!gifr', '');
-        gif = encodeURI(gif);
-        request(`${url}/random?tag=${gif}&api_key=${key}`, (error, response, body) => {
-            if (error) {
-                rtm.sendMessage('Det där gick åt katten. Meow. Något gick verkligen snett. :( ', event.channel);
-                return;
-            }
+    let url = 'https://api.tenor.com/v1';
+    let key = 'S6MP0504QE7S';
+    // let url = 'http://api.giphy.com/v1/gifs';
+    // let key = 'mcARlUwzVuaAZ9d0SNRLLnLlp4aVIHHQ';
+    // https://api.tenor.com/v1/search?q=emperor&key=S6MP0504QE7S
+    // https://api.tenor.com/v1/search?q=emperor&key=S6MP0504QE7S&limit=1
+    // if (getRandom) {
+    //     let gif = event.text.replace('!gifr', '');
+    //     gif = encodeURI(gif);
+    //     request(`${url}/random?tag=${gif}&api_key=${key}`, (error, response, body) => {
+    //         if (error) {
+    //             rtm.sendMessage('Det där gick åt katten. Meow. Något gick verkligen snett. :( ', event.channel);
+    //             return;
+    //         }
+    //         body = JSON.parse(body);
+    //         rtm.sendMessage(body.data.image_url, event.channel);
+    //     });
+    // }
+    // else {
+    let gif = event.text.replace('!gif', '');
+    gif = gif.substr(1);
+    gif = encodeURI(gif);
+    
+    // request(`${url}/search?q=${gif}&api_key=${key}&limit=1`, (error, response, body) => {
+    request(`${url}/search?q=${gif}&key=${key}&limit=1`, (error, response, body) => {
+        if (error) {
+            rtm.sendMessage('Det där gick åt katten. Meow. Något gick verkligen snett. :( ', event.channel);
+            return;
+        }
+        else {
             body = JSON.parse(body);
-            rtm.sendMessage(body.data.image_url, event.channel);
-        });
-    }
-    else {
-        let gif = event.text.replace('!gif', '');
-        gif = encodeURI(gif);
-        request(`${url}/search?q=${gif}&api_key=${key}&limit=1`, (error, response, body) => {
-            if (error) {
-                rtm.sendMessage('Det där gick åt katten. Meow. Något gick verkligen snett. :( ', event.channel);
-                return;
-            }
-            body = JSON.parse(body);
-            rtm.sendMessage(body.data[0].images.original.url, event.channel);
-        });
-    }
+            console.log(body);
+            rtm.sendMessage(body.results[0].url, event.channel);
+        }
+    });
+    // }
 }
 
 /*
