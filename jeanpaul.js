@@ -5,6 +5,7 @@ let moment = require('moment');
 
 let botConfig = require('./config.js');
 let jpFunctions = require('./functions.js');
+let helpers = require('./helpers');
 
 jpFunctions.configureMoment();
 
@@ -38,7 +39,10 @@ rtm.on(CLIENT_EVENTS.RTM.RAW_MESSAGE, (event) => {
 
     // Om ett meddelande skickas, oavsett kanal.
     if (event.type === 'message') {
-        if (event.text && event.text[0] !== '!' && (event.text.includes(`<@${myUserKey}>`) || event.text.includes(`JP`) || event.text.includes(`jp`))) {
+        if (event.text && helpers.getIsYoutubeLink(event.text)) {
+            jpFunctions.complainaboutWorkEthics(event, rtm);
+        }
+        else if (event.text && event.text[0] !== '!' && (event.text.includes(`<@${myUserKey}>`) || event.text.includes(`JP`) || event.text.includes(`jp`))) {
             // let targetUser = '<@' +message.user+ '>';
             jpFunctions.meow(rtm, event.channel);
         }

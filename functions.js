@@ -102,7 +102,7 @@ exports.getBitcoinPrice = function(event, rtm) {
     request('https://www.alphavantage.co/query?function=CURRENCY_EXCHANGE_RATE&from_currency=BTC&to_currency=SEK&apikey=ZBFWZJJKL5WA9XD0', (error, response, sekBody) => {
         if (response.statusCode === 200) {
             let bitcoinSEK = JSON.parse(sekBody)['Realtime Currency Exchange Rate']['5. Exchange Rate'];
-            
+
             request('https://www.alphavantage.co/query?function=CURRENCY_EXCHANGE_RATE&from_currency=BTC&to_currency=USD&apikey=ZBFWZJJKL5WA9XD0', (error, response, usdBody) => {
                 if (response.statusCode === 200) {
                     let bitcoinUSD = JSON.parse(usdBody)['Realtime Currency Exchange Rate']['5. Exchange Rate'];
@@ -142,7 +142,7 @@ exports.searchStock = function(event, rtm) {
                 rtm.sendMessage(`Jag hittade ingen aktie med det namnet. ${meow}`, event.channel)
             }
             else if(body.instruments.length > 1) {
-                let stocksFound = ''; 
+                let stocksFound = '';
                 body.instruments.forEach(stock => {
                     stocksFound += `*${stock.longName.formatted}*, `;
                 });
@@ -162,7 +162,7 @@ exports.searchStock = function(event, rtm) {
 exports.timedPost = function(event, rtm, generalChannelId) {
     // Posta fredagsgrodan, exakt klockan 08:07 på fredagar
     if (!postedFridayFrog) {
-        if (moment().format('dddd HH:mm') === 'Friday 08:07') { 
+        if (moment().format('dddd HH:mm') === 'Friday 08:07') {
             rtm.sendMessage('https://i.imgur.com/ORDvwi9.jpg', generalChannelId);
             postedFridayFrog = true;
         }
@@ -216,13 +216,13 @@ exports.checkTemp = function(event, rtm) {
 }
 
 /* Få JP att prata till en specifik kanal. Lämna allt tomt och kör bara !prata för att automatiskt mjaoa till #general.
-* 
+*
 *  ex: !prata
 *  eller
 *  ex: !prata <kanal> <meddelande>
 */
 exports.speak = function(event, rtm, generalChannelId) {
-    
+
     // Remove with and without the space, to make sure the !prata is gone.
     let speak = event.text.replace('!prata', '');
 
@@ -294,7 +294,7 @@ exports.getWeather = function(event, rtm, godmorgon, generalChannelId) {
         let meow = jpFunctions.getMeow();
         let temp = body.split("<temp>").pop();
         temp = temp.split("</temp>").shift();
-        
+
         // Then check the weather prognosis.
         request(weatherUrl, (smhiError, response, body) => {
             let meow = jpFunctions.getMeow();
@@ -312,7 +312,7 @@ exports.getWeather = function(event, rtm, godmorgon, generalChannelId) {
                 return;
             }
             body = JSON.parse(body);
-    
+
             for (i = 0; i < 12; i++) {
                 // Get all the temperatures and push it into an array.
                 let upcomingTemperature = body.timeSeries[i].parameters.find(parameter => {
@@ -351,7 +351,7 @@ exports.getWeather = function(event, rtm, godmorgon, generalChannelId) {
             }
 
         });
-    });    
+    });
 }
 
 exports.getGif = function(event, rtm, getRandom) {
@@ -377,7 +377,7 @@ exports.getGif = function(event, rtm, getRandom) {
     let gif = event.text.replace('!gif', '');
     gif = gif.substr(1);
     gif = encodeURI(gif);
-    
+
     // request(`${url}/search?q=${gif}&api_key=${key}&limit=1`, (error, response, body) => {
     request(`${url}/search?q=${gif}&key=${key}&limit=1`, (error, response, body) => {
         if (error) {
@@ -407,7 +407,7 @@ function findMedian(values) {
     values.sort((a, b) => {
         return a - b;
     });
-    
+
     let half = Math.floor(values.length/2);
 
     if(values.length % 2) {
@@ -416,4 +416,8 @@ function findMedian(values) {
     else {
         return (values[half - 1] + values[half]) / 2.0;
     }
+}
+
+exports.complainAboutWorkEthics(event, rtm) {
+    rtm.sendMessage('Procrastination time!');
 }
