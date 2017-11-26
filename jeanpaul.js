@@ -40,7 +40,7 @@ rtm.on(CLIENT_EVENTS.RTM.RAW_MESSAGE, (event) => {
     // Om ett meddelande skickas, oavsett kanal.
     if (event.type === 'message') {
         if (event.text && helpers.getIsYoutubeLink(event.text)) {
-            jpFunctions.complainaboutWorkEthics(event, rtm);
+            jpFunctions.complainAboutWorkEthics(event, rtm);
         }
         else if (event.text && event.text[0] !== '!' && (event.text.includes(`<@${myUserKey}>`) || event.text.includes(`JP`) || event.text.includes(`jp`))) {
             // let targetUser = '<@' +message.user+ '>';
