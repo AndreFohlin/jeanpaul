@@ -419,5 +419,5 @@ function findMedian(values) {
 }
 
 exports.complainAboutWorkEthics = function(event, rtm) {
-    rtm.sendMessage('Procrastination time!');
+    rtm.sendMessage('Procrastination time!', event.channel);
 }
