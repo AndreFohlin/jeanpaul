@@ -418,6 +418,6 @@ function findMedian(values) {
     }
 }
 
-exports.complainAboutWorkEthics(event, rtm) {
+exports.complainAboutWorkEthics = function(event, rtm) {
     rtm.sendMessage('Procrastination time!');
 }
