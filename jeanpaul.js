@@ -79,7 +79,7 @@ rtm.on(CLIENT_EVENTS.RTM.RAW_MESSAGE, (event) => {
 
         // Messa #general ifall någon går online, med ett random mjao
         if (event.presence === 'active' && event.user != myUserKey) {
-            if (numberOfMeows > 5) {
+            if (numberOfMeows > 10) {
                 jpFunctions.meow(rtm, generalChannelId);
                 numberOfMeows = 0;
             }
