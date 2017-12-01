@@ -318,13 +318,16 @@ exports.getWeather = function(event, rtm, godmorgon, generalChannelId) {
                 let upcomingTemperature = body.timeSeries[i].parameters.find(parameter => {
                     return parameter.name === 't';
                 });
+                let upcomingSymbol = body.timeSeries[i].parameters.find(parameter => {
+                    return parameter.name === 'Wsymb2';
+                });
 
                 if (i < 6) {
-                    symbols.push(body.timeSeries[i].parameters[18].values[0]);
+                    symbols.push(upcomingSymbol.values[0]);
                     temperature.push(upcomingTemperature.values[0]);
                 }
                 else {
-                    nextSymbols.push(body.timeSeries[i].parameters[18].values[0]);
+                    nextSymbols.push(upcomingSymbol.values[0]);
                     nextTemperature.push(upcomingTemperature.values[0]);
                 }
             }
@@ -357,23 +360,6 @@ exports.getWeather = function(event, rtm, godmorgon, generalChannelId) {
 exports.getGif = function(event, rtm, getRandom) {
     let url = 'https://api.tenor.com/v1';
     let key = 'S6MP0504QE7S';
-    // let url = 'http://api.giphy.com/v1/gifs';
-    // let key = 'mcARlUwzVuaAZ9d0SNRLLnLlp4aVIHHQ';
-    // https://api.tenor.com/v1/search?q=emperor&key=S6MP0504QE7S
-    // https://api.tenor.com/v1/search?q=emperor&key=S6MP0504QE7S&limit=1
-    // if (getRandom) {
-    //     let gif = event.text.replace('!gifr', '');
-    //     gif = encodeURI(gif);
-    //     request(`${url}/random?tag=${gif}&api_key=${key}`, (error, response, body) => {
-    //         if (error) {
-    //             rtm.sendMessage('Det där gick åt katten. Meow. Något gick verkligen snett. :( ', event.channel);
-    //             return;
-    //         }
-    //         body = JSON.parse(body);
-    //         rtm.sendMessage(body.data.image_url, event.channel);
-    //     });
-    // }
-    // else {
     let gif = event.text.replace('!gif', '');
     gif = gif.substr(1);
     gif = encodeURI(gif);
@@ -404,10 +390,10 @@ exports.getChannelEntity = function(channel, rtm) {
 
 // Hitta medianen av en array av siffror.
 function findMedian(values) {
+    console.log(values);
     values.sort((a, b) => {
         return a - b;
     });
-
     let half = Math.floor(values.length/2);
 
     if(values.length % 2) {
