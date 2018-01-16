@@ -178,10 +178,10 @@ exports.timedPost = function(event, rtm, generalChannelId) {
             jpFunctions.getWeather(event, rtm, true, generalChannelId);
             postedGoodMorning = true;
         }
-        else {
-            if (moment().format('HH:mm') !== '07:30') {
-                postedGoodMorning = false;
-            }
+    }
+    else {
+        if (moment().format('HH:mm') !== '07:30') {
+            postedGoodMorning = false;
         }
     }
 }
