@@ -17,7 +17,7 @@ let alphavantageApiKey = 'ZBFWZJJKL5WA9XD0';
 
 exports.sendHelp = function(event, rtm) {
     let meow = jpFunctions.getMeow();
-    rtm.sendMessage(`Detta kan du göra: *!temp* | *!väder* | *!aktie <aktienamn>* | *!bitcoin* | *!prata <#kanal> <meddelande> | *!gif <sökord> | !gifr <sökord> | ${meow}`, event.channel)
+    rtm.sendMessage(`Detta kan du göra: *!temp* | *!väder* | *!aktie <aktienamn>* | *!bitcoin* | *!crypto <kortkommando cryptovaluta> | *!prata <#kanal> <meddelande> | *!gif <sökord> | !gifr <sökord> | ${meow}`, event.channel)
 }
 
 exports.configureMoment = function() {
