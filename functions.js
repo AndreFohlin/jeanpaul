@@ -13,6 +13,8 @@ let lastBitcoinPriceCheck = moment();
 let lastTemperature = 0;
 let lastTemperatureCheck = moment();
 
+let alphavantageApiKey = 'ZBFWZJJKL5WA9XD0';
+
 exports.sendHelp = function(event, rtm) {
     let meow = jpFunctions.getMeow();
     rtm.sendMessage(`Detta kan du göra: *!temp* | *!väder* | *!aktie <aktienamn>* | *!bitcoin* | *!prata <#kanal> <meddelande> | *!gif <sökord> | !gifr <sökord> | ${meow}`, event.channel)
@@ -99,11 +101,11 @@ exports.numberParser = function(nummer) {
 }
 
 exports.getBitcoinPrice = function(event, rtm) {
-    request('https://www.alphavantage.co/query?function=CURRENCY_EXCHANGE_RATE&from_currency=BTC&to_currency=SEK&apikey=ZBFWZJJKL5WA9XD0', (error, response, sekBody) => {
+    request(`https://www.alphavantage.co/query?function=CURRENCY_EXCHANGE_RATE&from_currency=BTC&to_currency=SEK&apikey=${alphavantageApiKey}`, (error, response, sekBody) => {
         if (response.statusCode === 200) {
             let bitcoinSEK = JSON.parse(sekBody)['Realtime Currency Exchange Rate']['5. Exchange Rate'];
 
-            request('https://www.alphavantage.co/query?function=CURRENCY_EXCHANGE_RATE&from_currency=BTC&to_currency=USD&apikey=ZBFWZJJKL5WA9XD0', (error, response, usdBody) => {
+            request(`https://www.alphavantage.co/query?function=CURRENCY_EXCHANGE_RATE&from_currency=BTC&to_currency=USD&apikey=${alphavantageApiKey}`, (error, response, usdBody) => {
                 if (response.statusCode === 200) {
                     let bitcoinUSD = JSON.parse(usdBody)['Realtime Currency Exchange Rate']['5. Exchange Rate'];
 
@@ -128,6 +130,45 @@ exports.getBitcoinPrice = function(event, rtm) {
         }
         else {
             rtm.sendMessage('Det gick inte att hämta bitcoin-kurserna... Meow :(', event.channel);
+        }
+    });
+}
+
+exports.getCrypto = function(event, rtm) {
+    let cryptoCurrency = event.text.replace('!crypto ', '');
+    cryptoCurrency = cryptoCurrency.toUpperCase();
+
+    request(`https://www.alphavantage.co/query?function=CURRENCY_EXCHANGE_RATE&from_currency=${cryptoCurrency}&to_currency=SEK&apikey=${alphavantageApiKey}`, (error, response, body) => {
+        let meow = jpFunctions.getMeow();
+        if (response.statusCode === 200) {
+            body = JSON.parse(body);
+
+            if (body['Error Message'] != undefined) {
+                rtm.sendMessage(`Nu gick nåt åt katten! Du måste använda kortkommandot för kryptovalutan du vill se (tex btc för Bitcoin). Kika här för mer info: https://en.wikipedia.org/wiki/List_of_cryptocurrencies ${meow}`, event.channel);
+            }
+            else {
+                let cryptoName = body['Realtime Currency Exchange Rate']['2. From_Currency Name'];
+                let currentPrice = body['Realtime Currency Exchange Rate']['5. Exchange Rate'];
+
+                if (currentPrice >= 100) {
+                    currentPrice = jpFunctions.numberParser(parseFloat(currentPrice).toFixed(0))
+                }
+                else if (currentPrice > 1 && currentPrice < 100) {
+                    currentPrice = jpFunctions.numberParser(parseFloat(currentPrice).toFixed(2))
+                }
+                else {
+                    currentPrice = jpFunctions.numberParser(parseFloat(currentPrice));
+                }
+
+                if (cryptoName === null) {
+                    cryptoName = cryptoCurrency;
+                }
+
+                rtm.sendMessage(`Priset på *${cryptoName}* är just nu *${currentPrice} kr*. ${meow}`, event.channel);
+            }
+        }
+        else {
+            rtm.sendMessage('Det gick inte att hämta crypto-kursen just nu... Meow :(', event.channel);
         }
     });
 }
