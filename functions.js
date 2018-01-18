@@ -315,7 +315,7 @@ exports.getWeather = function(event, rtm, godmorgon, generalChannelId) {
         'lättare snöblandat regn',
         'snöblandat regn',
         'rejält med snöblandat regn',
-        'lättare snö',
+        'lättare snöfall',
         'snöfall',
         'rejält med snö',
         'lättare regnskurar',
@@ -431,7 +431,6 @@ exports.getChannelEntity = function(channel, rtm) {
 
 // Hitta medianen av en array av siffror.
 function findMedian(values) {
-    console.log(values);
     values.sort((a, b) => {
         return a - b;
     });
@@ -441,7 +440,7 @@ function findMedian(values) {
         return values[half];
     }
     else {
-        return (values[half - 1] + values[half]) / 2.0;
+        return Math.floor((values[half - 1] + values[half]) / 2.0);
     }
 }
 
