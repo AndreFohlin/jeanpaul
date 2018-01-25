@@ -50,8 +50,8 @@ rtm.on(CLIENT_EVENTS.RTM.RAW_MESSAGE, (event) => {
             if (event.text.includes('!bitcoin')) {
                 jpFunctions.getBitcoinPrice(event, rtm);
             }
-            else if(event.text.includes('!crypto')) {
-                jpFunctions.getCrypto(event, rtm);
+            else if(event.text.includes('!coin')) {
+                jpFunctions.getCoin(event, rtm);
             }
             else if (event.text.includes('!aktie')) {
                 jpFunctions.searchStock(event, rtm);

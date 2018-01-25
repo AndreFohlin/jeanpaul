@@ -9,6 +9,7 @@ let postedGoodMorning = false;
 
 let lastBitcoinPrice = 0;
 let lastBitcoinPriceCheck = moment();
+let coinData = [];
 
 let lastTemperature = 0;
 let lastTemperatureCheck = moment();
@@ -17,7 +18,7 @@ let alphavantageApiKey = 'ZBFWZJJKL5WA9XD0';
 
 exports.sendHelp = function(event, rtm) {
     let meow = jpFunctions.getMeow();
-    rtm.sendMessage(`Detta kan du göra: *!temp* | *!väder* | *!aktie <aktienamn>* | *!bitcoin* | *!crypto <kortkommando cryptovaluta> | *!prata <#kanal> <meddelande> | *!gif <sökord> | !gifr <sökord> | ${meow}`, event.channel)
+    rtm.sendMessage(`Detta kan du göra: *!temp* | *!väder* | *!aktie <aktienamn>* | *!bitcoin* | *!coin <kortkommando cryptovaluta> | *!prata <#kanal> <meddelande> | *!gif <sökord> | !gifr <sökord> | ${meow}`, event.channel)
 }
 
 exports.configureMoment = function() {
@@ -134,11 +135,11 @@ exports.getBitcoinPrice = function(event, rtm) {
     });
 }
 
-exports.getCrypto = function(event, rtm) {
-    let cryptoCurrency = event.text.replace('!crypto ', '');
-    cryptoCurrency = cryptoCurrency.toUpperCase();
+exports.getCoin = function(event, rtm) {
+    let coinCurrency = event.text.replace('!coin ', '');
+    coinCurrency = coinCurrency.toUpperCase();
 
-    request(`https://www.alphavantage.co/query?function=CURRENCY_EXCHANGE_RATE&from_currency=${cryptoCurrency}&to_currency=SEK&apikey=${alphavantageApiKey}`, (error, response, body) => {
+    request(`https://www.alphavantage.co/query?function=CURRENCY_EXCHANGE_RATE&from_currency=${coinCurrency}&to_currency=SEK&apikey=${alphavantageApiKey}`, (error, response, body) => {
         let meow = jpFunctions.getMeow();
         if (response.statusCode === 200) {
             body = JSON.parse(body);
@@ -147,8 +148,9 @@ exports.getCrypto = function(event, rtm) {
                 rtm.sendMessage(`Nu gick nåt åt katten! Du måste använda kortkommandot för kryptovalutan du vill se (tex btc för Bitcoin). Kika här för mer info: https://en.wikipedia.org/wiki/List_of_cryptocurrencies ${meow}`, event.channel);
             }
             else {
-                let cryptoName = body['Realtime Currency Exchange Rate']['2. From_Currency Name'];
-                let currentPrice = body['Realtime Currency Exchange Rate']['5. Exchange Rate'];
+                let coinName = body['Realtime Currency Exchange Rate']['2. From_Currency Name'];
+                let originalPrice = body['Realtime Currency Exchange Rate']['5. Exchange Rate'];
+                let currentPrice = originalPrice;
 
                 if (currentPrice >= 100) {
                     currentPrice = jpFunctions.numberParser(parseFloat(currentPrice).toFixed(0))
@@ -160,11 +162,26 @@ exports.getCrypto = function(event, rtm) {
                     currentPrice = jpFunctions.numberParser(parseFloat(currentPrice));
                 }
 
-                if (cryptoName === null) {
-                    cryptoName = cryptoCurrency;
+                if (coinName === null) {
+                    coinName = coinCurrency;
                 }
 
-                rtm.sendMessage(`Priset på *${cryptoName}* är just nu *${currentPrice} kr*. ${meow}`, event.channel);
+                // If it's undefined, it's not in the array yet.
+                if (coinData[coinCurrency] == undefined) {
+                    rtm.sendMessage(`Priset på *${coinName}* är just nu *${currentPrice} kr*. ${meow}`, event.channel);
+                }
+                else {
+                    let currencyDifference = originalPrice / coinData[coinCurrency].price - 1;
+                    let currencyTimePassed = coinData[coinCurrency].timestamp.fromNow();
+
+                    rtm.sendMessage(`*${coinName}* har ändrats med *${(currencyDifference * 100).toFixed(2)}%* sedan jag kollade för ${currencyTimePassed} och kostar nu *${currentPrice} kr*. ${meow}`, event.channel);
+                }
+
+                // Add the coin to the data array.
+                coinData[coinCurrency] = { 
+                    timestamp: moment(),
+                    price: originalPrice
+                }
             }
         }
         else {
