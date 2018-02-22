@@ -14,6 +14,8 @@ let coinData = [];
 let lastTemperature = 0;
 let lastTemperatureCheck = moment();
 
+let lastTelegramCheck = moment();
+
 let alphavantageApiKey = 'ZBFWZJJKL5WA9XD0';
 
 exports.sendHelp = function(event, rtm) {
@@ -215,6 +217,38 @@ exports.searchStock = function(event, rtm) {
             }
         }
     });
+}
+
+exports.checkTelegram = function(rtm, telegramChannelId) {
+    request('https://cageside.se:9002/api/v1/analyze/getarticles?limit=1', (error, response, body) => {
+        // console.log(JSON.parse(body));
+        body = JSON.parse(body)
+        let artikel = body[0];
+        let doPost = moment(lastTelegramCheck).isBefore(moment(artikel.createdAt));
+        // console.log(artikel, hasPosted);
+        if (doPost && artikel.score != undefined) {
+            if (artikel.stocks.length) {
+                let stocks = '';
+                if (artikel.stocks.length === 1) {
+                    stocks = `*${artikel.stocks[0].name}*`;
+                }
+                else if (artikel.stocks.length === 2) {
+                    stocks = `*${artikel.stocks[0].name}* och *${artikel.stocks[1].name}*`;
+                }
+                else {
+                    stocks = `*${artikel.stocks[0].name}*, *${artikel.stocks[1].name}* mfl`;
+                }
+
+                rtm.sendMessage(`Poäng: *${artikel.score}* | Aktie: ${stocks} | ${ artikel.header.indexOf('(Direkt)') === -1 ? artikel.header : artikel.header.toLowerCase() } | https://cageside.se/aktier/#/article/${artikel._id}`, telegramChannelId);
+            }
+            else {
+                rtm.sendMessage(`Poäng: *${artikel.score}* | ${ artikel.header.indexOf('(Direkt)') === -1 ? artikel.header : artikel.header.toLowerCase() } | https://cageside.se/aktier/#/article/${artikel._id}`, telegramChannelId);
+            }
+
+            lastTelegramCheck = moment();
+        }
+    });
+    // console.log(lastTelegramCheck);
 }
 
 exports.timedPost = function(event, rtm, generalChannelId) {

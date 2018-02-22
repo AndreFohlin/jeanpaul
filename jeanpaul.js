@@ -19,6 +19,7 @@ let numberOfMeows = 0;
 let channel;
 let generalChannelId = 'C4RUQDECW'; // ID:t för #general
 let jpUtvecklingChannelId = 'C7RGH9LN5';
+let telegramChannelId = 'C9CGLD36H';
 
 // The client will emit an RTM.AUTHENTICATED event on successful connection, with the `rtm.start` payload
 rtm.on(CLIENT_EVENTS.RTM.AUTHENTICATED, (rtmStartData) => {
@@ -95,6 +96,7 @@ rtm.on(CLIENT_EVENTS.RTM.RAW_MESSAGE, (event) => {
     // En slags ping/pong mellan server och bot. Kommer drygt varje sekund, men kan missas utifall andra event pågår.
     if (event.type === 'pong') {
         jpFunctions.timedPost(event, rtm, generalChannelId);
+        jpFunctions.checkTelegram(rtm, telegramChannelId);
     }
 });
 
