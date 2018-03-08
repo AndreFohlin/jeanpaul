@@ -239,10 +239,10 @@ exports.checkTelegram = function(rtm, telegramChannelId) {
                     stocks = `*${artikel.stocks[0].name}*, *${artikel.stocks[1].name}* mfl`;
                 }
 
-                rtm.sendMessage(`Poäng: *${artikel.score}* | Nummerpoäng: *${artikel.numberScore}* | Aktie: ${stocks} | ${ artikel.header.indexOf('(Direkt)') === -1 ? artikel.header : artikel.header.toLowerCase() } | https://cageside.se/aktier/#/article/${artikel._id}`, telegramChannelId);
+                rtm.sendMessage(`Poäng: *${artikel.score}* | *${artikel.mlScore.label === 'positive' ? 'Positiv' : 'Negativ' }* (${ +(artikel.mlScore.score * 100).toFixed(2) }% sannolikhet) | Aktie: ${stocks} | ${ artikel.header.indexOf('(Direkt)') === -1 ? artikel.header : artikel.header.toLowerCase() } | https://cageside.se/aktier/#/article/${artikel._id}`, telegramChannelId);
             }
             else {
-                rtm.sendMessage(`Poäng: *${artikel.score}* | Nummerpoäng: *${artikel.numberScore}* | ${ artikel.header.indexOf('(Direkt)') === -1 ? artikel.header : artikel.header.toLowerCase() } | https://cageside.se/aktier/#/article/${artikel._id}`, telegramChannelId);
+                rtm.sendMessage(`Poäng: *${artikel.score}* | *${artikel.mlScore.label === 'positive' ? 'Positiv' : 'Negativ' }* (${ +(artikel.mlScore.score * 100).toFixed(2) }% sannolikhet) | ${ artikel.header.indexOf('(Direkt)') === -1 ? artikel.header : artikel.header.toLowerCase() } | https://cageside.se/aktier/#/article/${artikel._id}`, telegramChannelId);
             }
 
             lastTelegramCheck = moment();
