@@ -220,7 +220,7 @@ exports.searchStock = function(event, rtm) {
 }
 
 exports.checkTelegram = function(rtm, telegramChannelId) {
-    request('https://cageside.se:9002/api/v1/analyze/getarticles?limit=1&skip=0&stockamount=2', (error, response, body) => {
+    request('https://cageside.se:9002/api/v1/analyze/getarticles?limit=1&skip=0&stockamount=3', (error, response, body) => {
         // console.log(JSON.parse(body));
         body = JSON.parse(body)
         let artikel = body[0];
