@@ -71,12 +71,12 @@ exports.getReactions = function() {
 		':tiger2:',
 		':sparkling_heart:',
 		':bill:',
-        'Wubba lubba meow meow!',
-        'meow',
-        'Meow.',
-        'Purrrrrrr..',
-        'Meowsa!',
-        'Mew'
+        	'Wubba lubba meow meow!',
+        	'meow',
+        	'Meow.',
+        	'Purrrrrrr..',
+        	'Meowsa!',
+        	'Mew'
 	];
 };
 
@@ -239,10 +239,10 @@ exports.checkTelegram = function(rtm, telegramChannelId) {
                     stocks = `*${artikel.stocks[0].name}*, *${artikel.stocks[1].name}* mfl`;
                 }
 
-                rtm.sendMessage(`Poäng: *${artikel.score}* | *${artikel.mlScore.label === 'positive' ? 'Positiv' : 'Negativ' }* (${ artikel.mlScore.label === 'positive' ? +(artikel.mlScore.positive * 100).toFixed(0) : +(artikel.mlScore.negative * 100).toFixed(0) }% sannolikhet) | Aktie: ${stocks} | ${ artikel.header.indexOf('(Direkt)') === -1 ? artikel.header : artikel.header.toLowerCase() } | https://cageside.se/aktier/#/article/${artikel._id}`, telegramChannelId);
+                rtm.sendMessage(`*${artikel.mlScore.label === 'positive' ? 'Positiv' : 'Negativ' }* (${ artikel.mlScore.label === 'positive' ? +(artikel.mlScore.positive * 100).toFixed(0) : +(artikel.mlScore.negative * 100).toFixed(0) }% sannolikhet) | Aktie: ${stocks} | ${ artikel.header.indexOf('(Direkt)') === -1 ? artikel.header : artikel.header.toLowerCase() } | https://cageside.se/aktier/#/article/${artikel._id}`, telegramChannelId);
             }
             else {
-                rtm.sendMessage(`Poäng: *${artikel.score}* | *${artikel.mlScore.label === 'positive' ? 'Positiv' : 'Negativ' }* (${ artikel.mlScore.label === 'positive' ? +(artikel.mlScore.positive * 100).toFixed(0) : +(artikel.mlScore.negative * 100).toFixed(0) }% sannolikhet) | ${ artikel.header.indexOf('(Direkt)') === -1 ? artikel.header : artikel.header.toLowerCase() } | https://cageside.se/aktier/#/article/${artikel._id}`, telegramChannelId);
+                rtm.sendMessage(`*${artikel.mlScore.label === 'positive' ? 'Positiv' : 'Negativ' }* (${ artikel.mlScore.label === 'positive' ? +(artikel.mlScore.positive * 100).toFixed(0) : +(artikel.mlScore.negative * 100).toFixed(0) }% sannolikhet) | ${ artikel.header.indexOf('(Direkt)') === -1 ? artikel.header : artikel.header.toLowerCase() } | https://cageside.se/aktier/#/article/${artikel._id}`, telegramChannelId);
             }
 
             lastTelegramCheck = moment();
