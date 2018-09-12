@@ -266,13 +266,13 @@ exports.timedPost = function(event, rtm, generalChannelId) {
     }
 
     if (!postedGoodMorning) {
-        if (moment().format('HH:mm') === '07:30') {
+        if (moment().format('HH:mm') === '06:30') {
             jpFunctions.getWeather(event, rtm, true, generalChannelId);
             postedGoodMorning = true;
         }
     }
     else {
-        if (moment().format('HH:mm') !== '07:30') {
+        if (moment().format('HH:mm') !== '06:30') {
             postedGoodMorning = false;
         }
     }
