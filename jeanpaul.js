@@ -96,7 +96,7 @@ rtm.on(CLIENT_EVENTS.RTM.RAW_MESSAGE, (event) => {
     // En slags ping/pong mellan server och bot. Kommer drygt varje sekund, men kan missas utifall andra event pågår.
     if (event.type === 'pong') {
         jpFunctions.timedPost(event, rtm, generalChannelId);
-        jpFunctions.checkTelegram(rtm, telegramChannelId);
+        // jpFunctions.checkTelegram(rtm, telegramChannelId);
     }
 });
 
